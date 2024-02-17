@@ -17,7 +17,7 @@ func StartServer() {
 		})
 	})
 
-	router.Run(":5000")
+	router.Run(":8080")
 
 	log.Println("Server down")
 }

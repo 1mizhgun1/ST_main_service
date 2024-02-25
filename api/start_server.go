@@ -21,8 +21,10 @@ func StartServer(addr string) {
 
 	corsHandler := handlers.CORS(headersOk, originsOk, methodsOk)(r)
 
-	r.HandleFunc("/ping", handlePing)
 	r.HandleFunc("/send", handleSend)
+	r.HandleFunc("/transfer", handleTransfer)
+
+	r.HandleFunc("/ping", handlePing)
 	r.HandleFunc("/test", handleTest)
 
 	http.Handle("/", r)

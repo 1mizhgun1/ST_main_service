@@ -26,23 +26,22 @@ type codeRequest struct {
 	Data          string    `json:"data"`
 }
 
-func getSendData(w http.ResponseWriter, r *http.Request) (sendRequest, error) {
+func getRequestData(w http.ResponseWriter, r *http.Request, requestData interface{}) error {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		return sendRequest{}, err
+		return err
 	}
 	defer r.Body.Close()
 
-	data := sendRequest{}
-	err = json.Unmarshal(body, &data)
+	err = json.Unmarshal(body, &requestData)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		return sendRequest{}, err
+		return err
 	}
 
 	w.WriteHeader(http.StatusOK)
-	return data, err
+	return nil
 }
 
 func sendCodeRequest(client *http.Client, body codeRequest) {

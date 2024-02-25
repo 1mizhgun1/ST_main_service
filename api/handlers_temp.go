@@ -1,9 +1,7 @@
 package api
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 )
 
@@ -18,20 +16,11 @@ func handleTest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	defer r.Body.Close()
-
 	data := codeRequest{}
-	err = json.Unmarshal(body, &data)
+	err := getRequestData(w, r, &data)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
-	fmt.Printf("got: %v\n", data)
-	w.WriteHeader(http.StatusOK)
+	
+	fmt.Printf("%v\n", data)
 }

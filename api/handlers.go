@@ -12,7 +12,8 @@ func handleSend(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := getSendData(w, r)
+	data := sendRequest{}
+	err := getRequestData(w, r, &data)
 	if err != nil {
 		return
 	}
@@ -31,4 +32,19 @@ func handleSend(w http.ResponseWriter, r *http.Request) {
 			Data:          segment,
 		})
 	}
+}
+
+func handleTransfer(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	data := codeRequest{}
+	err := getRequestData(w, r, &data)
+	if err != nil {
+		return
+	}
+
+	putSegmentToKafka(data.Data)
 }

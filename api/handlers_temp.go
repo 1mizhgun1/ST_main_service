@@ -10,8 +10,20 @@ func handlePing(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func handleTest(w http.ResponseWriter, r *http.Request) {
-	data := codeRequest{}
+func handleTestSend(w http.ResponseWriter, r *http.Request) {
+	data := receiveRequest{}
+	err := getRequestData(r, &data)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	fmt.Printf("%v\n", data)
+	w.WriteHeader(http.StatusOK)
+}
+
+func handleTestReceive(w http.ResponseWriter, r *http.Request) {
+	data := receiveRequest{}
 	err := getRequestData(r, &data)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)

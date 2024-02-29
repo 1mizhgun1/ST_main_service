@@ -8,17 +8,17 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/google/uuid"
+	"github.com/satori/uuid"
 )
 
 type sendRequest struct {
 	Username string    `json:"username"`
-	Text     string    `json:"text"`
+	Text     string    `json:"data"`
 	SendTime time.Time `json:"send_time"`
 }
 type receiveRequest struct {
 	Username string    `json:"username"`
-	Text     string    `json:"text"`
+	Text     string    `json:"data"`
 	SendTime time.Time `json:"send_time"`
 	Error    string    `json:"error"`
 }

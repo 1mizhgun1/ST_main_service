@@ -13,6 +13,25 @@ import (
 )
 
 func StartServer(addr string) {
+	go func() {
+		err := readFromKafka()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}()
+
+	go func() {
+		ticker := time.NewTicker(kafkaReadPeriod)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-ticker.C:
+				scanStorage(sendReceiveRequest)
+			}
+		}
+	}()
+
 	r := mux.NewRouter()
 
 	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -25,7 +44,8 @@ func StartServer(addr string) {
 	r.HandleFunc("/transfer", handleTransfer).Methods(http.MethodPost, http.MethodOptions)
 
 	r.HandleFunc("/ping", handlePing).Methods(http.MethodPost, http.MethodOptions)
-	r.HandleFunc("/test", handleTest).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/test_send", handleTestSend).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/test_receive", handleTestReceive).Methods(http.MethodPost, http.MethodOptions)
 
 	http.Handle("/", r)
 

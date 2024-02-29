@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/google/uuid"
+	"github.com/satori/uuid"
 )
 
 func handleSend(w http.ResponseWriter, r *http.Request) {
@@ -23,7 +23,7 @@ func handleSend(w http.ResponseWriter, r *http.Request) {
 	client := &http.Client{}
 	for i, segment := range segments {
 		go sendCodeRequest(client, codeRequest{
-			MessageId:     uuid.New(),
+			MessageId:     uuid.NewV4(),
 			SegmentNumber: i + 1,
 			TotalSegments: total,
 			Username:      data.Username,
@@ -41,7 +41,7 @@ func handleTransfer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = putSegmentToKafka(data.Data)
+	err = putSegmentToKafka(data)
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)

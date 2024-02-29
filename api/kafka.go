@@ -2,8 +2,6 @@ package api
 
 import (
 	"fmt"
-	"log"
-
 	"github.com/IBM/sarama"
 )
 
@@ -12,27 +10,25 @@ const (
 	kafkaTopic = "segments"
 )
 
-func putSegmentToKafka(segment string) {
+func putSegmentToKafka(segment string) error {
 	config := sarama.NewConfig()
+	config.Producer.Return.Successes = true
 
 	producer, err := sarama.NewSyncProducer([]string{kafkaAddr}, config)
 	if err != nil {
-		log.Fatalf("Error creating producer: %s", err)
+		return fmt.Errorf("error creating producer: %w", err)
 	}
-	defer func() {
-		if err := producer.Close(); err != nil {
-			log.Fatalf("Error closing producer: %s", err)
-		}
-	}()
+	defer producer.Close()
 
 	message := &sarama.ProducerMessage{
 		Topic: kafkaTopic,
-		Value: sarama.StringEncoder("Your message data here"),
+		Value: sarama.StringEncoder(segment),
 	}
 
-	partition, offset, err := producer.SendMessage(message)
+	_, _, err = producer.SendMessage(message)
 	if err != nil {
-		log.Fatalf("Failed to send message: %s", err)
+		return fmt.Errorf("failed to send message: %w", err)
 	}
-	fmt.Printf("Message sent to partition %d at offset %d\n", partition, offset)
+
+	return nil
 }

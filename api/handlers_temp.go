@@ -6,21 +6,18 @@ import (
 )
 
 func handlePing(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("pong"))
+	w.Write([]byte(`{"message":"pong"}`))
 	w.WriteHeader(http.StatusOK)
 }
 
 func handleTest(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusMethodNotAllowed)
+	data := codeRequest{}
+	err := getRequestData(r, &data)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	data := codeRequest{}
-	err := getRequestData(w, r, &data)
-	if err != nil {
-		return
-	}
-	
 	fmt.Printf("%v\n", data)
+	w.WriteHeader(http.StatusOK)
 }

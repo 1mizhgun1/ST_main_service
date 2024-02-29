@@ -1,22 +1,21 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/google/uuid"
 )
 
 func handleSend(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusMethodNotAllowed)
+	data := sendRequest{}
+	err := getRequestData(r, &data)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	data := sendRequest{}
-	err := getRequestData(w, r, &data)
-	if err != nil {
-		return
-	}
+	w.WriteHeader(http.StatusOK)
 
 	segments := splitData(data.Text, segmentSize)
 	total := len(segments)
@@ -35,16 +34,19 @@ func handleSend(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleTransfer(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
-
 	data := codeRequest{}
-	err := getRequestData(w, r, &data)
+	err := getRequestData(r, &data)
 	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	putSegmentToKafka(data.Data)
+	err = putSegmentToKafka(data.Data)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }

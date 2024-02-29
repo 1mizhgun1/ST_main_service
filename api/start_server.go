@@ -1,10 +1,14 @@
 package api
 
 import (
+	"context"
+	"fmt"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
-	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
@@ -15,27 +19,41 @@ func StartServer(addr string) {
 		http.Error(w, "Not Found", http.StatusNotFound)
 	})
 
-	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
-	originsOk := handlers.AllowedOrigins([]string{"*"})
-	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+	r.Use(CORSMiddleware)
 
-	corsHandler := handlers.CORS(headersOk, originsOk, methodsOk)(r)
+	r.HandleFunc("/send", handleSend).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/transfer", handleTransfer).Methods(http.MethodPost, http.MethodOptions)
 
-	r.HandleFunc("/send", handleSend)
-	r.HandleFunc("/transfer", handleTransfer)
-
-	r.HandleFunc("/ping", handlePing)
-	r.HandleFunc("/test", handleTest)
+	r.HandleFunc("/ping", handlePing).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/test", handleTest).Methods(http.MethodPost, http.MethodOptions)
 
 	http.Handle("/", r)
 
+	signalCh := make(chan os.Signal, 1)
+	signal.Notify(signalCh, syscall.SIGINT, syscall.SIGTERM)
+
 	srv := http.Server{
-		Handler:           corsHandler,
+		Handler:           r,
 		Addr:              addr,
 		ReadTimeout:       readTimeout * time.Second,
 		WriteTimeout:      writeTimeout * time.Second,
 		ReadHeaderTimeout: readHeaderTimeout * time.Second,
 	}
 
-	srv.ListenAndServe()
+	go func() {
+		if err := srv.ListenAndServe(); err != nil {
+			fmt.Println("Server stopped")
+		}
+	}()
+	fmt.Println("Server started")
+
+	sig := <-signalCh
+	fmt.Printf("Received signal: %v\n", sig)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		fmt.Printf("Server shutdown failed: %v\n", err)
+	}
 }

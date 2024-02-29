@@ -1,15 +1,19 @@
-package api
+package handlers
 
 import (
 	"fmt"
 	"net/http"
 
 	"github.com/satori/uuid"
+
+	"github.com/1mizhgun1/ST_main_service/api/consts"
+	"github.com/1mizhgun1/ST_main_service/api/kafka"
+	"github.com/1mizhgun1/ST_main_service/api/utils"
 )
 
-func handleSend(w http.ResponseWriter, r *http.Request) {
-	data := sendRequest{}
-	err := getRequestData(r, &data)
+func HandleSend(w http.ResponseWriter, r *http.Request) {
+	data := utils.SendRequest{}
+	err := utils.GetRequestData(r, &data)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -17,12 +21,11 @@ func handleSend(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 
-	segments := splitData(data.Text, segmentSize)
+	segments := utils.SplitData(data.Text, consts.SegmentSize)
 	total := len(segments)
 
-	client := &http.Client{}
 	for i, segment := range segments {
-		go sendCodeRequest(client, codeRequest{
+		go utils.SendCodeRequest(utils.CodeRequest{
 			MessageId:     uuid.NewV4(),
 			SegmentNumber: i + 1,
 			TotalSegments: total,
@@ -33,15 +36,15 @@ func handleSend(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func handleTransfer(w http.ResponseWriter, r *http.Request) {
-	data := codeRequest{}
-	err := getRequestData(r, &data)
+func HandleTransfer(w http.ResponseWriter, r *http.Request) {
+	data := utils.CodeRequest{}
+	err := utils.GetRequestData(r, &data)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	err = putSegmentToKafka(data)
+	err = kafka.PutSegmentToKafka(data)
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)

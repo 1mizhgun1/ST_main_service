@@ -1,24 +1,20 @@
-package api
+package kafka
 
 import (
 	"encoding/json"
 	"fmt"
-	"time"
-
 	"github.com/IBM/sarama"
+
+	"github.com/1mizhgun1/ST_main_service/api/consts"
+	"github.com/1mizhgun1/ST_main_service/api/storage"
+	"github.com/1mizhgun1/ST_main_service/api/utils"
 )
 
-const (
-	kafkaAddr       = "localhost:9092"
-	kafkaTopic      = "segments"
-	kafkaReadPeriod = 2 * time.Second
-)
-
-func putSegmentToKafka(segment codeRequest) error {
+func PutSegmentToKafka(segment utils.CodeRequest) error {
 	config := sarama.NewConfig()
 	config.Producer.Return.Successes = true
 
-	producer, err := sarama.NewSyncProducer([]string{kafkaAddr}, config)
+	producer, err := sarama.NewSyncProducer([]string{consts.KafkaAddr}, config)
 	if err != nil {
 		return fmt.Errorf("error creating producer: %w", err)
 	}
@@ -26,7 +22,7 @@ func putSegmentToKafka(segment codeRequest) error {
 
 	segmentString, _ := json.Marshal(segment)
 	message := &sarama.ProducerMessage{
-		Topic: kafkaTopic,
+		Topic: consts.KafkaTopic,
 		Value: sarama.StringEncoder(segmentString),
 	}
 
@@ -38,17 +34,17 @@ func putSegmentToKafka(segment codeRequest) error {
 	return nil
 }
 
-func readFromKafka() error {
+func ReadFromKafka() error {
 	config := sarama.NewConfig()
 	config.Consumer.Return.Errors = true
 
-	consumer, err := sarama.NewConsumer([]string{kafkaAddr}, config)
+	consumer, err := sarama.NewConsumer([]string{consts.KafkaAddr}, config)
 	if err != nil {
 		return fmt.Errorf("error creating consumer: %w", err)
 	}
 	defer consumer.Close()
 
-	partitionConsumer, err := consumer.ConsumePartition(kafkaTopic, 0, sarama.OffsetNewest)
+	partitionConsumer, err := consumer.ConsumePartition(consts.KafkaTopic, 0, sarama.OffsetNewest)
 	if err != nil {
 		return fmt.Errorf("error opening topic: %w", err)
 	}
@@ -57,12 +53,12 @@ func readFromKafka() error {
 	for {
 		select {
 		case message := <-partitionConsumer.Messages():
-			messageData := codeRequest{}
+			messageData := utils.CodeRequest{}
 			err := json.Unmarshal(message.Value, &messageData)
 			if err != nil {
 				fmt.Printf("Error reading from kafka: %v", err)
 			}
-			addSegment(messageData)
+			storage.AddSegment(messageData)
 		case err := <-partitionConsumer.Errors():
 			fmt.Printf("Error: %s\n", err.Error())
 		}

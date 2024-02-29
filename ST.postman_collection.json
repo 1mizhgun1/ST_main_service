@@ -1,0 +1,103 @@
+{
+	"info": {
+		"_postman_id": "0e95eae4-cc67-4a06-b906-424cceb0fab2",
+		"name": "ST",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30287941"
+	},
+	"item": [
+		{
+			"name": "send",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"username\",\r\n    \"data\": \"Hello, world! Second part??!\",\r\n    \"send_time\": \"2024-02-23T13:45:41Z\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/send",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"send"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "transfer 1/2",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"message_id\": \"32418069-43d1-4349-b9b4-51475e43211a\",\r\n    \"segment_number\": 1,\r\n    \"total_segments\": 2,\r\n    \"username\": \"username\",\r\n    \"data\": \"Hello, world!\",\r\n    \"send_time\": \"2024-02-23T13:45:41Z\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/transfer",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"transfer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "transfer 2/2",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"message_id\": \"32418069-43d1-4349-b9b4-51475e43211a\",\r\n    \"segment_number\": 2,\r\n    \"total_segments\": 2,\r\n    \"username\": \"username\",\r\n    \"data\": \" Second part??!\",\r\n    \"send_time\": \"2024-02-23T13:45:41Z\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/transfer",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"transfer"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

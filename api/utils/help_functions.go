@@ -1,10 +1,10 @@
-package api
+package utils
 
 import (
 	"math"
 )
 
-func splitData(data string, segmentSize int) []string {
+func SplitData(data string, segmentSize int) []string {
 	result := []string{}
 
 	length := len(data)

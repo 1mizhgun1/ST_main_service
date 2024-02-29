@@ -1,10 +1,13 @@
-package api
+package storage
 
 import (
-	"github.com/satori/uuid"
-	"net/http"
 	"sync"
 	"time"
+
+	"github.com/satori/uuid"
+
+	"github.com/1mizhgun1/ST_main_service/api/consts"
+	"github.com/1mizhgun1/ST_main_service/api/utils"
 )
 
 type Message struct {
@@ -17,11 +20,11 @@ type Message struct {
 }
 
 type Storage map[uuid.UUID]Message
-type sendFunc func(client *http.Client, body receiveRequest)
+type sendFunc func(body utils.ReceiveRequest)
 
 var storage = Storage{}
 
-func addMessage(request codeRequest) {
+func addMessage(request utils.CodeRequest) {
 	storage[request.MessageId] = Message{
 		Received: 0,
 		Total:    request.TotalSegments,
@@ -32,7 +35,7 @@ func addMessage(request codeRequest) {
 	}
 }
 
-func addSegment(request codeRequest) {
+func AddSegment(request utils.CodeRequest) {
 	mu := &sync.Mutex{}
 	mu.Lock()
 
@@ -60,26 +63,25 @@ func getMessageText(id uuid.UUID) string {
 	return result
 }
 
-func scanStorage(sender sendFunc) {
+func ScanStorage(sender sendFunc) {
 	mu := &sync.Mutex{}
 	mu.Lock()
 
-	client := &http.Client{}
 	for id, message := range storage {
 		if message.Received == message.Total {
-			go sender(client, receiveRequest{
+			go sender(utils.ReceiveRequest{
 				Username: message.Username,
 				Text:     getMessageText(id),
 				SendTime: message.SendTime,
 				Error:    "",
 			})
 			delete(storage, id)
-		} else if time.Since(message.Last) > kafkaReadPeriod {
-			go sender(client, receiveRequest{
+		} else if time.Since(message.Last) > consts.KafkaReadPeriod {
+			go sender(utils.ReceiveRequest{
 				Username: message.Username,
 				Text:     "",
 				SendTime: message.SendTime,
-				Error:    segmentLostError,
+				Error:    consts.SegmentLostError,
 			})
 			delete(storage, id)
 		}

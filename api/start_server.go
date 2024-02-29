@@ -10,24 +10,31 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+
+	"github.com/1mizhgun1/ST_main_service/api/consts"
+	"github.com/1mizhgun1/ST_main_service/api/handlers"
+	"github.com/1mizhgun1/ST_main_service/api/kafka"
+	"github.com/1mizhgun1/ST_main_service/api/middleware"
+	"github.com/1mizhgun1/ST_main_service/api/storage"
+	"github.com/1mizhgun1/ST_main_service/api/utils"
 )
 
 func StartServer(addr string) {
 	go func() {
-		err := readFromKafka()
+		err := kafka.ReadFromKafka()
 		if err != nil {
 			fmt.Println(err)
 		}
 	}()
 
 	go func() {
-		ticker := time.NewTicker(kafkaReadPeriod)
+		ticker := time.NewTicker(consts.KafkaReadPeriod)
 		defer ticker.Stop()
 
 		for {
 			select {
 			case <-ticker.C:
-				scanStorage(sendReceiveRequest)
+				storage.ScanStorage(utils.SendReceiveRequest)
 			}
 		}
 	}()
@@ -38,14 +45,14 @@ func StartServer(addr string) {
 		http.Error(w, "Not Found", http.StatusNotFound)
 	})
 
-	r.Use(CORSMiddleware)
+	r.Use(middleware.CORSMiddleware)
 
-	r.HandleFunc("/send", handleSend).Methods(http.MethodPost, http.MethodOptions)
-	r.HandleFunc("/transfer", handleTransfer).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/send", handlers.HandleSend).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/transfer", handlers.HandleTransfer).Methods(http.MethodPost, http.MethodOptions)
 
-	r.HandleFunc("/ping", handlePing).Methods(http.MethodPost, http.MethodOptions)
-	r.HandleFunc("/test_send", handleTestSend).Methods(http.MethodPost, http.MethodOptions)
-	r.HandleFunc("/test_receive", handleTestReceive).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/ping", handlers.HandlePing).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/test_send", handlers.HandleTestSend).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/test_receive", handlers.HandleTestReceive).Methods(http.MethodPost, http.MethodOptions)
 
 	http.Handle("/", r)
 
@@ -55,9 +62,9 @@ func StartServer(addr string) {
 	srv := http.Server{
 		Handler:           r,
 		Addr:              addr,
-		ReadTimeout:       readTimeout * time.Second,
-		WriteTimeout:      writeTimeout * time.Second,
-		ReadHeaderTimeout: readHeaderTimeout * time.Second,
+		ReadTimeout:       consts.ReadTimeout * time.Second,
+		WriteTimeout:      consts.WriteTimeout * time.Second,
+		ReadHeaderTimeout: consts.ReadHeaderTimeout * time.Second,
 	}
 
 	go func() {

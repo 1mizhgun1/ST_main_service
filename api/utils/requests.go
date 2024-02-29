@@ -1,4 +1,4 @@
-package api
+package utils
 
 import (
 	"bytes"
@@ -9,21 +9,23 @@ import (
 	"time"
 
 	"github.com/satori/uuid"
+
+	"github.com/1mizhgun1/ST_main_service/api/consts"
 )
 
-type sendRequest struct {
+type SendRequest struct {
 	Username string    `json:"username"`
 	Text     string    `json:"data"`
 	SendTime time.Time `json:"send_time"`
 }
-type receiveRequest struct {
+type ReceiveRequest struct {
 	Username string    `json:"username"`
 	Text     string    `json:"data"`
 	SendTime time.Time `json:"send_time"`
 	Error    string    `json:"error"`
 }
 
-type codeRequest struct {
+type CodeRequest struct {
 	MessageId     uuid.UUID `json:"message_id"`
 	SegmentNumber int       `json:"segment_number"`
 	TotalSegments int       `json:"total_segments"`
@@ -32,7 +34,7 @@ type codeRequest struct {
 	Data          string    `json:"data"`
 }
 
-func getRequestData(r *http.Request, requestData interface{}) error {
+func GetRequestData(r *http.Request, requestData interface{}) error {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		return err
@@ -47,13 +49,14 @@ func getRequestData(r *http.Request, requestData interface{}) error {
 	return nil
 }
 
-func sendCodeRequest(client *http.Client, body codeRequest) {
+func SendCodeRequest(body CodeRequest) {
 	reqBody, _ := json.Marshal(body)
 
-	req, _ := http.NewRequest("POST", codeUrl, bytes.NewBuffer(reqBody))
+	req, _ := http.NewRequest("POST", consts.CodeUrl, bytes.NewBuffer(reqBody))
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Content-Length", strconv.Itoa(len(reqBody)))
 
+	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		return
@@ -62,13 +65,14 @@ func sendCodeRequest(client *http.Client, body codeRequest) {
 	defer resp.Body.Close()
 }
 
-func sendReceiveRequest(client *http.Client, body receiveRequest) {
+func SendReceiveRequest(body ReceiveRequest) {
 	reqBody, _ := json.Marshal(body)
 
-	req, _ := http.NewRequest("POST", receiveUrl, bytes.NewBuffer(reqBody))
+	req, _ := http.NewRequest("POST", consts.ReceiveUrl, bytes.NewBuffer(reqBody))
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Content-Length", strconv.Itoa(len(reqBody)))
 
+	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		return

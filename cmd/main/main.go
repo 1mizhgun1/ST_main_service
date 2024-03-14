@@ -1,8 +1,9 @@
-package api
+package main
 
 import (
 	"context"
 	"fmt"
+	"github.com/1mizhgun1/ST_main_service/internal/middleware"
 	"net/http"
 	"os"
 	"os/signal"
@@ -10,16 +11,23 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	httpSwagger "github.com/swaggo/http-swagger"
 
-	"github.com/1mizhgun1/ST_main_service/api/consts"
-	"github.com/1mizhgun1/ST_main_service/api/handlers"
-	"github.com/1mizhgun1/ST_main_service/api/kafka"
-	"github.com/1mizhgun1/ST_main_service/api/middleware"
-	"github.com/1mizhgun1/ST_main_service/api/storage"
-	"github.com/1mizhgun1/ST_main_service/api/utils"
+	"github.com/1mizhgun1/ST_main_service/internal/consts"
+	_ "github.com/1mizhgun1/ST_main_service/internal/docs"
+	"github.com/1mizhgun1/ST_main_service/internal/handlers"
+	"github.com/1mizhgun1/ST_main_service/internal/kafka"
+	"github.com/1mizhgun1/ST_main_service/internal/storage"
+	"github.com/1mizhgun1/ST_main_service/internal/utils"
 )
 
-func StartServer(addr string) {
+const address = consts.MyHost + ":8080"
+
+// @title 			Awesome API
+// @version 		1.0
+// @description 	API for ST_main_service service
+// @host 			http://127.0.0.1:8080
+func main() {
 	go func() {
 		err := kafka.ReadFromKafka()
 		if err != nil {
@@ -47,6 +55,12 @@ func StartServer(addr string) {
 
 	r.Use(middleware.CORSMiddleware)
 
+	r.PathPrefix("/swagger").Handler(httpSwagger.Handler(
+		httpSwagger.DeepLinking(true),
+		httpSwagger.DocExpansion("none"),
+		httpSwagger.DomID("swagger-ui"),
+	)).Methods(http.MethodGet, http.MethodOptions)
+
 	r.HandleFunc("/send", handlers.HandleSend).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/transfer", handlers.HandleTransfer).Methods(http.MethodPost, http.MethodOptions)
 
@@ -61,7 +75,7 @@ func StartServer(addr string) {
 
 	srv := http.Server{
 		Handler:           r,
-		Addr:              addr,
+		Addr:              address,
 		ReadTimeout:       consts.ReadTimeout * time.Second,
 		WriteTimeout:      consts.WriteTimeout * time.Second,
 		ReadHeaderTimeout: consts.ReadHeaderTimeout * time.Second,

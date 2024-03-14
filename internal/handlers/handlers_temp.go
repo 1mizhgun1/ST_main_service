@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/1mizhgun1/ST_main_service/api/utils"
+	"github.com/1mizhgun1/ST_main_service/internal/utils"
 )
 
 func HandlePing(w http.ResponseWriter, r *http.Request) {

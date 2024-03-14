@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/IBM/sarama"
 
-	"github.com/1mizhgun1/ST_main_service/api/consts"
-	"github.com/1mizhgun1/ST_main_service/api/storage"
-	"github.com/1mizhgun1/ST_main_service/api/utils"
+	"github.com/1mizhgun1/ST_main_service/internal/consts"
+	"github.com/1mizhgun1/ST_main_service/internal/storage"
+	"github.com/1mizhgun1/ST_main_service/internal/utils"
 )
 
 func PutSegmentToKafka(segment utils.CodeRequest) error {

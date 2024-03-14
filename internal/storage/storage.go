@@ -6,8 +6,8 @@ import (
 
 	"github.com/satori/uuid"
 
-	"github.com/1mizhgun1/ST_main_service/api/consts"
-	"github.com/1mizhgun1/ST_main_service/api/utils"
+	"github.com/1mizhgun1/ST_main_service/internal/consts"
+	"github.com/1mizhgun1/ST_main_service/internal/utils"
 )
 
 type Message struct {
@@ -76,7 +76,7 @@ func ScanStorage(sender sendFunc) {
 				Error:    "",
 			})
 			delete(storage, id)
-		} else if time.Since(message.Last) > consts.KafkaReadPeriod {
+		} else if time.Since(message.Last) > consts.KafkaReadPeriod+time.Second {
 			go sender(utils.ReceiveRequest{
 				Username: message.Username,
 				Text:     "",

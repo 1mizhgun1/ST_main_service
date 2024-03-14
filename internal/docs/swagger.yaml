@@ -1,0 +1,75 @@
+definitions:
+  utils.CodeRequest:
+    properties:
+      data:
+        type: string
+      message_id:
+        type: string
+      segment_number:
+        type: integer
+      send_time:
+        type: string
+      total_segments:
+        type: integer
+      username:
+        type: string
+    type: object
+  utils.SendRequest:
+    properties:
+      data:
+        type: string
+      send_time:
+        type: string
+      username:
+        type: string
+    type: object
+host: http://127.0.0.1:8080
+info:
+  contact: {}
+  description: API for ST_main_service service
+  title: Awesome API
+  version: "1.0"
+paths:
+  /send:
+    post:
+      consumes:
+      - application/json
+      description: Send message
+      operationId: send
+      parameters:
+      - description: message data
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/utils.SendRequest'
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Send
+      tags:
+      - message
+  /transfer:
+    post:
+      consumes:
+      - application/json
+      description: Transfer message
+      operationId: transfer
+      parameters:
+      - description: segment data
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/utils.CodeRequest'
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Transfer
+      tags:
+      - message
+swagger: "2.0"

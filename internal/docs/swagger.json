@@ -1,0 +1,115 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API for ST_main_service service",
+        "title": "Awesome API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "http://127.0.0.1:8080",
+    "paths": {
+        "/send": {
+            "post": {
+                "description": "Send message",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "message"
+                ],
+                "summary": "Send",
+                "operationId": "send",
+                "parameters": [
+                    {
+                        "description": "message data",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/utils.SendRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        },
+        "/transfer": {
+            "post": {
+                "description": "Transfer message",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "message"
+                ],
+                "summary": "Transfer",
+                "operationId": "transfer",
+                "parameters": [
+                    {
+                        "description": "segment data",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/utils.CodeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "utils.CodeRequest": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "string"
+                },
+                "message_id": {
+                    "type": "string"
+                },
+                "segment_number": {
+                    "type": "integer"
+                },
+                "send_time": {
+                    "type": "string"
+                },
+                "total_segments": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "utils.SendRequest": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "string"
+                },
+                "send_time": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

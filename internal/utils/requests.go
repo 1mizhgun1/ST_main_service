@@ -10,7 +10,7 @@ import (
 
 	"github.com/satori/uuid"
 
-	"github.com/1mizhgun1/ST_main_service/api/consts"
+	"github.com/1mizhgun1/ST_main_service/internal/consts"
 )
 
 type SendRequest struct {
@@ -18,6 +18,7 @@ type SendRequest struct {
 	Text     string    `json:"data"`
 	SendTime time.Time `json:"send_time"`
 }
+
 type ReceiveRequest struct {
 	Username string    `json:"username"`
 	Text     string    `json:"data"`

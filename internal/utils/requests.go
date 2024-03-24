@@ -14,7 +14,7 @@ import (
 )
 
 type SendRequest struct {
-	Id       int       `json:"id"`
+	Id       int       `json:"id,omitempty"`
 	Username string    `json:"username"`
 	Text     string    `json:"data"`
 	SendTime time.Time `json:"send_time"`

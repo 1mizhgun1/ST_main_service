@@ -88,6 +88,9 @@ const docTemplate = `{
                 "data": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "integer"
+                },
                 "message_id": {
                     "type": "string"
                 },
@@ -110,6 +113,9 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "send_time": {
                     "type": "string"

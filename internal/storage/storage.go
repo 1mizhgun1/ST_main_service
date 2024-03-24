@@ -14,6 +14,7 @@ type Message struct {
 	Received int
 	Total    int
 	Last     time.Time
+	Id       int
 	Username string
 	Data     []string
 	SendTime time.Time
@@ -29,6 +30,7 @@ func addMessage(request utils.CodeRequest) {
 		Received: 0,
 		Total:    request.TotalSegments,
 		Last:     time.Now().UTC(),
+		Id:       request.Id,
 		Username: request.Username,
 		Data:     make([]string, request.TotalSegments),
 		SendTime: request.SendTime,
@@ -70,6 +72,7 @@ func ScanStorage(sender sendFunc) {
 	for id, message := range storage {
 		if message.Received == message.Total {
 			go sender(utils.ReceiveRequest{
+				Id:       message.Id,
 				Username: message.Username,
 				Text:     getMessageText(id),
 				SendTime: message.SendTime,
@@ -78,6 +81,7 @@ func ScanStorage(sender sendFunc) {
 			delete(storage, id)
 		} else if time.Since(message.Last) > consts.KafkaReadPeriod+time.Second {
 			go sender(utils.ReceiveRequest{
+				Id:       message.Id,
 				Username: message.Username,
 				Text:     "",
 				SendTime: message.SendTime,

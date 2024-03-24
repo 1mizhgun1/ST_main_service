@@ -14,12 +14,14 @@ import (
 )
 
 type SendRequest struct {
+	Id       int       `json:"id"`
 	Username string    `json:"username"`
 	Text     string    `json:"data"`
 	SendTime time.Time `json:"send_time"`
 }
 
 type ReceiveRequest struct {
+	Id       int       `json:"id"`
 	Username string    `json:"username"`
 	Text     string    `json:"data"`
 	SendTime time.Time `json:"send_time"`
@@ -27,6 +29,7 @@ type ReceiveRequest struct {
 }
 
 type CodeRequest struct {
+	Id            int       `json:"id"`
 	MessageId     uuid.UUID `json:"message_id"`
 	SegmentNumber int       `json:"segment_number"`
 	TotalSegments int       `json:"total_segments"`

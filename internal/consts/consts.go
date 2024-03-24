@@ -3,7 +3,7 @@ package consts
 import "time"
 
 const (
-	MyHost            = "192.168.146.106"
+	MyHost            = "127.0.0.1" // 192.168.146.106
 	CodeUrl           = "http://192.168.146.60:8080/code"
 	ReceiveUrl        = "http://192.168.146.193:8081/receive"
 	SegmentSize       = 100

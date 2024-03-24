@@ -3,6 +3,8 @@ definitions:
     properties:
       data:
         type: string
+      id:
+        type: integer
       message_id:
         type: string
       segment_number:
@@ -18,6 +20,8 @@ definitions:
     properties:
       data:
         type: string
+      id:
+        type: integer
       send_time:
         type: string
       username:

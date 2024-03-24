@@ -36,6 +36,7 @@ func HandleSend(w http.ResponseWriter, r *http.Request) {
 	id := uuid.NewV4()
 	for i, segment := range segments {
 		go utils.SendCodeRequest(utils.CodeRequest{
+			Id:            data.Id,
 			MessageId:     id,
 			SegmentNumber: i + 1,
 			TotalSegments: total,

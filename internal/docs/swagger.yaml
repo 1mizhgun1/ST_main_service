@@ -27,11 +27,10 @@ definitions:
       username:
         type: string
     type: object
-host: http://127.0.0.1:8080
 info:
   contact: {}
-  description: API for ST_main_service service
-  title: Awesome API
+  description: API for Transport Layer
+  title: Transport Layer API
   version: "1.0"
 paths:
   /send:

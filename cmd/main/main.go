@@ -23,10 +23,9 @@ import (
 
 const address = consts.MyHost + ":8080"
 
-// @title 			Awesome API
+// @title 			Transport Layer API
 // @version 		1.0
-// @description 	API for ST_main_service service
-// @host 			http://127.0.0.1:8080
+// @description 	API for Transport Layer
 func main() {
 	go func() {
 		err := kafka.ReadFromKafka()

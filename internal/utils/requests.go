@@ -21,7 +21,7 @@ type SendRequest struct {
 }
 
 type ReceiveRequest struct {
-	Id       int       `json:"id"`
+	Id       int       `json:"id,omitempty"`
 	Username string    `json:"username"`
 	Text     string    `json:"data"`
 	SendTime time.Time `json:"send_time"`
@@ -29,7 +29,7 @@ type ReceiveRequest struct {
 }
 
 type CodeRequest struct {
-	Id            int       `json:"id"`
+	Id            int       `json:"id,omitempty"`
 	MessageId     uuid.UUID `json:"message_id"`
 	SegmentNumber int       `json:"segment_number"`
 	TotalSegments int       `json:"total_segments"`

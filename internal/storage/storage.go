@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
@@ -40,6 +41,7 @@ func addMessage(request utils.CodeRequest) {
 func AddSegment(request utils.CodeRequest) {
 	mu := &sync.Mutex{}
 	mu.Lock()
+	defer mu.Unlock()
 
 	id := request.MessageId
 	_, found := storage[id]
@@ -52,8 +54,6 @@ func AddSegment(request utils.CodeRequest) {
 	message.Last = time.Now().UTC()
 	message.Data[request.SegmentNumber-1] = request.Data
 	storage[id] = message
-
-	mu.Unlock()
 }
 
 func getMessageText(id uuid.UUID) string {
@@ -68,28 +68,32 @@ func getMessageText(id uuid.UUID) string {
 func ScanStorage(sender sendFunc) {
 	mu := &sync.Mutex{}
 	mu.Lock()
+	defer mu.Unlock()
 
+	payload := utils.ReceiveRequest{}
 	for id, message := range storage {
 		if message.Received == message.Total {
-			go sender(utils.ReceiveRequest{
+			payload = utils.ReceiveRequest{
 				Id:       message.Id,
 				Username: message.Username,
 				Text:     getMessageText(id),
 				SendTime: message.SendTime,
 				Error:    "",
-			})
+			}
+			fmt.Printf("sent message: %+v\n", payload)
+			go sender(payload)
 			delete(storage, id)
 		} else if time.Since(message.Last) > consts.KafkaReadPeriod+time.Second {
-			go sender(utils.ReceiveRequest{
+			payload = utils.ReceiveRequest{
 				Id:       message.Id,
 				Username: message.Username,
 				Text:     "",
 				SendTime: message.SendTime,
 				Error:    consts.SegmentLostError,
-			})
+			}
+			fmt.Printf("sent error: %+v\n", payload)
+			go sender(payload)
 			delete(storage, id)
 		}
 	}
-
-	mu.Unlock()
 }

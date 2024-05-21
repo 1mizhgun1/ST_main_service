@@ -58,6 +58,7 @@ func ReadFromKafka() error {
 			if err != nil {
 				fmt.Printf("Error reading from kafka: %v", err)
 			}
+			fmt.Printf("%+v\n", messageData)
 			storage.AddSegment(messageData)
 		case err := <-partitionConsumer.Errors():
 			fmt.Printf("Error: %s\n", err.Error())

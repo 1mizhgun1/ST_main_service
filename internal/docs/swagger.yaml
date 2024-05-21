@@ -3,7 +3,7 @@ definitions:
     properties:
       data:
         type: string
-      id:
+      socket_id:
         type: integer
       message_id:
         type: string
@@ -20,7 +20,7 @@ definitions:
     properties:
       data:
         type: string
-      id:
+      socket_id:
         type: integer
       send_time:
         type: string

@@ -5,7 +5,7 @@ import (
 )
 
 func SplitData(data string, segmentSize int) []string {
-	result := []string{}
+	result := make([]string, 0)
 
 	length := len(data)
 	segmentCount := int(math.Ceil(float64(length) / float64(segmentSize)))

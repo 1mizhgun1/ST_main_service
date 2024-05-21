@@ -28,8 +28,7 @@ const address = consts.MyHost + ":8080"
 // @description 	API for Transport Layer
 func main() {
 	go func() {
-		err := kafka.ReadFromKafka()
-		if err != nil {
+		if err := kafka.ReadFromKafka(); err != nil {
 			fmt.Println(err)
 		}
 	}()

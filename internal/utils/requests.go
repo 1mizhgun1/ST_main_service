@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/satori/uuid"
@@ -45,8 +44,7 @@ func GetRequestData(r *http.Request, requestData interface{}) error {
 	}
 	defer r.Body.Close()
 
-	err = json.Unmarshal(body, &requestData)
-	if err != nil {
+	if err := json.Unmarshal(body, &requestData); err != nil {
 		return err
 	}
 
@@ -58,7 +56,6 @@ func SendCodeRequest(body CodeRequest) {
 
 	req, _ := http.NewRequest("POST", consts.CodeUrl, bytes.NewBuffer(reqBody))
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Content-Length", strconv.Itoa(len(reqBody)))
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -74,7 +71,6 @@ func SendReceiveRequest(body ReceiveRequest) {
 
 	req, _ := http.NewRequest("POST", consts.ReceiveUrl, bytes.NewBuffer(reqBody))
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Content-Length", strconv.Itoa(len(reqBody)))
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
